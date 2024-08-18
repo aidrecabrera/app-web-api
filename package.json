@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npx tsc && node dist/index.js",
-    "dev": "npx nodemon --exec 'npx ts-node' src/index.ts",
+    "dev": "npx nodemon --exec 'ts-node -r tsconfig-paths/register' src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,15 +12,27 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.8.0",
     "mongoose": "^8.5.3",
-    "nodemon": "^3.1.4"
+    "nodemon": "^3.1.4",
+    "realm": "^12.13.0",
+    "realm-web": "^2.0.1"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.7",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "express-validator": "^7.2.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.4"
   }
 }
