@@ -1,5 +1,7 @@
 import {ObjectId} from 'mongodb'
 
+export type calculationType = 'percentage' | 'fixed'
+
 export interface OverheadExpense {
   costPerUnit: number
   expenseCategory: string
