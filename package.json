@@ -21,7 +21,8 @@
     "mongoose": "^8.5.3",
     "nodemon": "^3.1.4",
     "realm": "^12.13.0",
-    "realm-web": "^2.0.1"
+    "realm-web": "^2.0.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",

@@ -1,5 +1,5 @@
 import {Schema, model} from 'mongoose'
-import {IProduct} from '@/types/products'
+import {IProduct} from '@/types/product.types'
 
 const ProductSchema = new Schema<IProduct>({
   _owner_id: {type: Schema.Types.ObjectId, required: true},
