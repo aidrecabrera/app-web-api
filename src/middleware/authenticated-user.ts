@@ -1,7 +1,7 @@
 import {Request, Response, NextFunction} from 'express'
 import jwt, {JsonWebTokenError, TokenExpiredError} from 'jsonwebtoken'
 import User from '@/models/user'
-import {AuthenticatedRequest} from '@/types/auth-request'
+import {AuthenticatedRequest} from '@/types/auth.types'
 import {ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET} from '@/config/secrets'
 
 interface DecodedToken {
