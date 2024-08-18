@@ -1,15 +1,22 @@
 import {Response} from 'express'
-import {Product} from '@/models/products'
-import {IProduct} from '@/types/products'
-import {AuthenticatedRequest} from '@/types/auth-request'
+import {AuthenticatedRequest} from '@/types/auth.types'
+import {
+  createProduct as createProductService,
+  getAllProducts as getAllProductsService,
+  getProductById as getProductByIdService,
+  updateProduct as updateProductService,
+  deleteProduct as deleteProductService,
+} from '@/services/product.service'
+import {IProduct} from '@/types/product.types'
 
 export const createProduct = async (
   req: AuthenticatedRequest,
   res: Response
-) => {
+): Promise<void> => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({message: 'Unauthorized'})
+      res.status(401).json({message: 'Unauthorized'})
+      return
     }
 
     const userId = req.user._id
@@ -19,12 +26,11 @@ export const createProduct = async (
     }
 
     if (!productData.productName) {
-      return res.status(400).json({message: 'Missing required fields'})
+      res.status(400).json({message: 'Missing required fields'})
+      return
     }
 
-    const newProduct = new Product(productData)
-    await newProduct.save()
-
+    const newProduct = await createProductService(productData)
     res.status(201).json(newProduct)
   } catch (error) {
     console.error('Error creating product:', error)
@@ -38,15 +44,15 @@ export const createProduct = async (
 export const getAllProducts = async (
   req: AuthenticatedRequest,
   res: Response
-) => {
+): Promise<void> => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({message: 'Unauthorized'})
+      res.status(401).json({message: 'Unauthorized'})
+      return
     }
 
     const userId = req.user._id
-    const products = await Product.find({_owner_id: userId})
-
+    const products = await getAllProductsService(userId)
     res.status(200).json(products)
   } catch (error) {
     console.error('Error fetching products:', error)
@@ -60,25 +66,26 @@ export const getAllProducts = async (
 export const getProductById = async (
   req: AuthenticatedRequest,
   res: Response
-) => {
+): Promise<void> => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({message: 'Unauthorized'})
+      res.status(401).json({message: 'Unauthorized'})
+      return
     }
 
     const userId = req.user._id
     const productId = req.params.id
 
     if (!productId) {
-      return res.status(400).json({message: 'Product ID is required'})
+      res.status(400).json({message: 'Product ID is required'})
+      return
     }
 
-    const product = await Product.findOne({_id: productId, _owner_id: userId})
+    const product = await getProductByIdService(userId, productId)
 
     if (!product) {
-      return res
-        .status(404)
-        .json({message: 'Product not found or not owned by user'})
+      res.status(404).json({message: 'Product not found or not owned by user'})
+      return
     }
 
     res.status(200).json(product)
@@ -94,10 +101,11 @@ export const getProductById = async (
 export const updateProduct = async (
   req: AuthenticatedRequest,
   res: Response
-) => {
+): Promise<void> => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({message: 'Unauthorized'})
+      res.status(401).json({message: 'Unauthorized'})
+      return
     }
 
     const userId = req.user._id
@@ -105,23 +113,24 @@ export const updateProduct = async (
     const updateData = req.body
 
     if (!productId) {
-      return res.status(400).json({message: 'Product ID is required'})
+      res.status(400).json({message: 'Product ID is required'})
+      return
     }
 
     if (Object.keys(updateData).length === 0) {
-      return res.status(400).json({message: 'No update data provided'})
+      res.status(400).json({message: 'No update data provided'})
+      return
     }
 
-    const updatedProduct = await Product.findOneAndUpdate(
-      {_id: productId, _owner_id: userId},
-      updateData,
-      {new: true, runValidators: true}
+    const updatedProduct = await updateProductService(
+      userId,
+      productId,
+      updateData
     )
 
     if (!updatedProduct) {
-      return res
-        .status(404)
-        .json({message: 'Product not found or not owned by user'})
+      res.status(404).json({message: 'Product not found or not owned by user'})
+      return
     }
 
     res.status(200).json(updatedProduct)
@@ -137,28 +146,26 @@ export const updateProduct = async (
 export const deleteProduct = async (
   req: AuthenticatedRequest,
   res: Response
-) => {
+): Promise<void> => {
   try {
     if (!req.user || !req.user._id) {
-      return res.status(401).json({message: 'Unauthorized'})
+      res.status(401).json({message: 'Unauthorized'})
+      return
     }
 
     const userId = req.user._id
     const productId = req.params.id
 
     if (!productId) {
-      return res.status(400).json({message: 'Product ID is required'})
+      res.status(400).json({message: 'Product ID is required'})
+      return
     }
 
-    const deletedProduct = await Product.findOneAndDelete({
-      _id: productId,
-      _owner_id: userId,
-    })
+    const result = await deleteProductService(userId, productId)
 
-    if (!deletedProduct) {
-      return res
-        .status(404)
-        .json({message: 'Product not found or not owned by user'})
+    if (!result) {
+      res.status(404).json({message: 'Product not found or not owned by user'})
+      return
     }
 
     res.status(200).json({message: 'Product deleted successfully'})
