@@ -1,8 +1,8 @@
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '@/config/secrets'
 import User from '@/models/user'
-import {Request, Response} from 'express'
 import bcrypt from 'bcrypt'
+import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import {ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET} from '@/config/secrets'
 
 interface ILoginUser {
   email: string
@@ -23,14 +23,14 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(401).json({error: 'Invalid credentials'})
     }
     // generate access and refresh tokens
-    const accessToken = jwt.sign({userId: user._id}, ACCESS_TOKEN_SECRET, {
+    const token = jwt.sign({userId: user._id}, ACCESS_TOKEN_SECRET, {
       expiresIn: '15m',
     })
     const refreshToken = jwt.sign({userId: user._id}, REFRESH_TOKEN_SECRET, {
       expiresIn: '7d',
     })
     // set cookies
-    res.cookie('token', accessToken, {
+    res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

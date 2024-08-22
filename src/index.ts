@@ -1,11 +1,12 @@
-import mongoose from 'mongoose'
-import express from 'express'
-import dotenv from 'dotenv'
-import {connectDB} from './config/db'
-import authRouter from './routes/authentication'
-import productRoutes from './routes/products'
 import cookieParser from 'cookie-parser'
-import {authenticateUser} from './middleware/authenticated-user'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import express from 'express'
+import { connectDB } from './config/db'
+import { authenticateUser } from './middleware/authenticated-user'
+import authRoute from './routes/authentication'
+import productRoute from './routes/products'
+import userRoute from './routes/user'
 
 // secrets
 dotenv.config()
@@ -18,10 +19,18 @@ const MONGO_URI = process.env.MONGODB_URI || ''
 // middleware
 app.use(express.json())
 app.use(cookieParser())
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  })
+)
 
 // routes
-app.use('/auth', authRouter)
-app.use('/api/products', productRoutes)
+app.use('/auth', authRoute)
+app.use('/user', authenticateUser, userRoute)
+app.use('/api/products', authenticateUser, productRoute)
 
 // main server entrypoint
 const startServer = async (): Promise<void> => {

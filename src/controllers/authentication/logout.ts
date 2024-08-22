@@ -1,4 +1,4 @@
-import {Request, Response} from 'express'
+import { Request, Response } from 'express'
 
 export const logoutUser = (req: Request, res: Response): void => {
   const cookieOptions = {
@@ -8,8 +8,9 @@ export const logoutUser = (req: Request, res: Response): void => {
   }
 
   // Clear access token and refresh token cookies
-  res.clearCookie('accessToken', cookieOptions)
+  res.clearCookie('token', cookieOptions)
   res.clearCookie('refreshToken', cookieOptions)
 
   res.status(200).json({message: 'Logged out successfully'})
 }
+

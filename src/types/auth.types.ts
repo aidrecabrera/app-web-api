@@ -1,6 +1,12 @@
 import {Request} from 'express'
 
-export interface AuthenticatedRequest extends Request {
+export interface UserPayload {
   // biome-ignore lint/suspicious/noExplicitAny:
-  user?: any
+  _id: any
+  email: string
+  password: string
+}
+
+export interface AuthenticatedRequest extends Request {
+  user?: UserPayload
 }

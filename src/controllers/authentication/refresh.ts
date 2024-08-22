@@ -1,9 +1,10 @@
-import {Request, Response} from 'express'
-import jwt from 'jsonwebtoken'
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '@/config/secrets'
 import User from '@/models/user'
-import {REFRESH_TOKEN_SECRET, ACCESS_TOKEN_SECRET} from '@/config/secrets'
+import { Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
 
 export const refreshToken = async (req: Request, res: Response) => {
+  console.log('Cookies:', req.cookies)
   const refreshToken = req.cookies.refreshToken
 
   if (!refreshToken) {
@@ -20,11 +21,11 @@ export const refreshToken = async (req: Request, res: Response) => {
       return res.status(401).json({error: 'User not found'})
     }
 
-    const accessToken = jwt.sign({userId: user._id}, ACCESS_TOKEN_SECRET, {
+    const token = jwt.sign({userId: user._id}, ACCESS_TOKEN_SECRET, {
       expiresIn: '15m',
     })
 
-    res.cookie('token', accessToken, {
+    res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

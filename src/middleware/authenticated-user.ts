@@ -1,8 +1,8 @@
-import {Request, Response, NextFunction} from 'express'
-import jwt, {JsonWebTokenError, TokenExpiredError} from 'jsonwebtoken'
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '@/config/secrets'
 import User from '@/models/user'
-import {AuthenticatedRequest} from '@/types/auth.types'
-import {ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET} from '@/config/secrets'
+import { AuthenticatedRequest } from '@/types/auth.types'
+import { NextFunction, Response } from 'express'
+import jwt from 'jsonwebtoken'
 
 interface DecodedToken {
   userId: string
@@ -35,14 +35,14 @@ export const authenticateUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  const accessToken = req.cookies.accessToken
+  const token = req.cookies.token
   const refreshToken = req.cookies.refreshToken
 
-  if (!accessToken && !refreshToken) {
+  if (!token && !refreshToken) {
     return handleAuthError(res, 'No token provided, authentication failed.')
   }
 
-  let decoded = verifyToken(accessToken, ACCESS_TOKEN_SECRET)
+  let decoded = verifyToken(token, ACCESS_TOKEN_SECRET)
 
   if (decoded) {
     const user = await findUserById(decoded.userId)
@@ -72,7 +72,7 @@ export const authenticateUser = async (
     expiresIn: '15m',
   })
 
-  res.cookie('accessToken', newAccessToken, {
+  res.cookie('token', newAccessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
